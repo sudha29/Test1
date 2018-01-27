@@ -5,20 +5,43 @@
     <property name="build.dir"   value="build"/>
     <property name="classes.dir" value="${build.dir}/classes"/>
     <property name="jar.dir"     value="${build.dir}/jar"/>
+    <property name="report.dir"     value="${build.dir}/reports"/>
+    <property name="lib.dir" value="lib"/>
+
+
+    <path id="junit.class.path">
+        <pathelement location="lib/junit-4.11.jar" />
+        <pathelement location="${build.dir}" />
+    </path>
 
    <target name="clean">
         <delete dir="${build.dir}"/>
+        <delete dir="${report.dir}"/>
+        <delete dir="${classes.dir}"/>
     </target>
 
     <target name="compile">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}" destdir="${classes.dir}"/>
     </target>
+ 
+   <target name="junit" depends="compile">
 
-    <target name="jar" depends="compile">
+        <junit printsummary="on" fork="true" haltonfailure="yes">
+            <classpath refid="junit.class.path" />
+            <formatter type="xml" />
+            <batchtest todir="${report.dir}">
+                <fileset dir="${src.dir}">
+                    <include name="**/HelloWorld.java" />
+                </fileset>
+            </batchtest>
+        </junit>
+
+  </target>
+
+   <target name="jar" depends="junit">
         <mkdir dir="${jar.dir}"/>
         <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}"/>
     </target>
-
 
 </project>
